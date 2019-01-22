@@ -1,0 +1,60 @@
+Deck name: Zarina “Cane Pazzo” Jackson
+
+
+Creatures: 19 Actions: 12 Artifacts: 4 Upgrades: 1
+A: 10.33 (-7.22)| B: 21.0 (+2.72)| C: 8.67 (+3.16)
+E: 5.67 (-1.91)| Cons: -0.153
+
+
+
+Untamed
+U: Troop Call
+C: Full Moon
+C: Key Charge
+C: Nocturnal Maneuver
+C: Nocturnal Maneuver
+C: Cooperative Hunting
+U: Ritual of Balance
+C: Ancient Bear
+C: Niffle Ape
+C: Niffle Ape
+C: Murmook
+C: Murmook
+
+Brobnar
+C: Coward's End
+C: Punch
+C: Anger
+C: Gauntlet of Command
+C: Gauntlet of Command
+U: Earthshaker
+C: Bumpsy
+C: Smaaash
+C: Valdr
+C: Troll
+C: Ganger Chieftain
+
+Dis
+R: Phoenix Heart
+C: Mind Barb
+R: Dance of Doom
+R: Dance of Doom
+U: Library of the Damned
+C: Charette
+C: The Terror
+C: Dust Imp
+U: Drumble
+U: Drumble
+U: Drumble
+C: Tocsin
+U: Shaffles
+
+
+KeyForgeGame: https://www.keyforgegame.com/deck-details/2676445e-d876-4ba9-a71d-e0f5f71ffba9
+
+
+KeyForge-Compendium: https://keyforge-compendium.com/decks/2676445e-d876-4ba9-a71d-e0f5f71ffba9
+
+
+All done!
+
