@@ -1,59 +1,76 @@
-Deck name: Zarina “Cane Pazzo” Jackson
+Running keyforge_scraper using the link: 
+https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
 
 
-Creatures: 19 Actions: 12 Artifacts: 4 Upgrades: 1
-A: 10.33 (-7.22)| B: 21.0 (+2.72)| C: 8.67 (+3.16)
-E: 5.67 (-1.91)| Cons: -0.153
+Deck name: The Beefy Undertaker
 
 
+Creatures: 21 Actions: 8 Artifacts: 5 Upgrades: 2
+A: 14.67 (-2.88)| B: 16.67 (-1.61)| C: 5.67 (+0.16)
+E: 6.33 (-1.25)| Cons: -0.39
+
+
+
+Mars
+U: Psychic Network
+C: Ammonia Clouds
+C: Ammonia Clouds
+C: Mothergun
+C: Mothergun
+C: “John Smyth”
+C: Vezyma Thinkdrone
+C: Mindwarper
+C: Zyzzix the Many
+U: Ether Spider
+C: Yxilo Bolter
+C: Biomatrix Backup
 
 Untamed
-U: Troop Call
-C: Full Moon
-C: Key Charge
+U: Grasping Vines
+C: Save the Pack
 C: Nocturnal Maneuver
-C: Nocturnal Maneuver
-C: Cooperative Hunting
-U: Ritual of Balance
+C: Hunting Witch
+C: Murmook
+C: Ancient Bear
 C: Ancient Bear
 C: Niffle Ape
-C: Niffle Ape
-C: Murmook
-C: Murmook
-
-Brobnar
-C: Coward's End
-C: Punch
-C: Anger
-C: Gauntlet of Command
-C: Gauntlet of Command
-U: Earthshaker
-C: Bumpsy
-C: Smaaash
-C: Valdr
-C: Troll
-C: Ganger Chieftain
+C: Witch of the Eye
+C: Dew Faerie
+U: Mushroom Man
+R: Kindrith Longshot
 
 Dis
-R: Phoenix Heart
-C: Mind Barb
-R: Dance of Doom
-R: Dance of Doom
-U: Library of the Damned
+C: Fear
+U: Tendrils of Pain
+C: Lash of Broken Dreams
+U: Lifeward
+U: Lifeward
 C: Charette
-C: The Terror
-C: Dust Imp
-U: Drumble
-U: Drumble
-U: Drumble
-C: Tocsin
-U: Shaffles
+C: Ember Imp
+C: Ember Imp
+U: Snudge
+R: Tolas
+C: Succubus
+U: Flame-Wreathed
 
 
-KeyForgeGame: https://www.keyforgegame.com/deck-details/2676445e-d876-4ba9-a71d-e0f5f71ffba9
+SAS Info
+
+Amber Control: 6.5
+Expected Amber: 13.5
+Artifact Control: 2.0
+Creature Control: 13.0
+Cards: 59
+Synergy: 7
+Antisynergy: -3
+SAS: 63
 
 
-KeyForge-Compendium: https://keyforge-compendium.com/decks/2676445e-d876-4ba9-a71d-e0f5f71ffba9
+KeyForgeGame: https://www.keyforgegame.com/deck-details/01946cb1-82cd-40b5-a9a1-2945b377c26d
+
+KeyForge-Compendium: https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
+
+Decks of KeyForge: https://decksofkeyforge.com/api/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d/simple
 
 
 All done!

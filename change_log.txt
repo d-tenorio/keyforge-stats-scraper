@@ -5,3 +5,8 @@ v. 0.1: implemented basic functionality to extract ABCE data from Compendium lin
 1.21.19
 
 v 0.11: added decksofkeyforge link to output
+
+1.23.19
+
+v0.20: fixed off-by-1 indexing error
+added SAS support!

@@ -5,6 +5,9 @@
 v0.11
 
 Written in Python 2.7.X, mainly to maintain compatibility with PyInstaller
+
+executable created using command 
+pyinstaller --onefile main.py -n keyforge_stats_scraper_exe
 """
 
 from requests import get
@@ -13,6 +16,8 @@ from contextlib import closing
 from bs4 import BeautifulSoup
 import sys
 import codecs
+import json
+import urllib2
 
 # parts of this code taken from https://realpython.com/python-web-scraping-practical-introduction/
 # and adapted for this use
@@ -185,6 +190,43 @@ def get_name(s):
     """
     return s.select("div > h5 > a")[0].text
 
+def camel_case(s):
+    parts = s.split(" ")
+    parts[0] = parts[0].lower()
+    
+    return "".join(parts)
+
+def get_SAS(s):
+    """
+    takes in a decksofkeyforge link, loads the JSON containing deck information,
+    and returns the important SAS stats
+    """
+
+    #now, get the json from decksofkeyforge
+    data = json.load(urllib2.urlopen(s))
+    
+    titles_AERC = ["Amber Control", "Expected Amber","Artifact Control","Creature Control"]
+    titles_SAS = ["Cards","Synergy","Antisynergy","SAS"]    
+    
+    ans = []
+    
+    #find the proper key-value pair in the JSON
+    for e in titles_AERC:
+        val = str(data[camel_case(e)])
+        ans.append(": ".join([e,val]) )
+        
+    for e in titles_SAS:
+        val = data[e.lower()+"Rating"]
+        if e == "Antisynergy": #make sure the antisynergy is negative!
+            val = -1*val
+        val = str(val)
+        ans.append(": ".join([e,val]) )
+        
+    ans = "\r\n".join(ans)
+    return ans
+    
+    
+
 
 def main():
     """
@@ -201,18 +243,18 @@ def main():
     old_stdout = sys.stdout
     
     #obtain link from the user
-    #deck_link = raw_input("Enter the link to a keyforge compendium page, of the format of the following link, without any extra spaces or characters: \nhttps://keyforge-compendium.com/decks/DECKCODE \nType in that link here:  ")
+    deck_link = raw_input("Enter the link to a keyforge compendium page, of the format of the following link, without any extra spaces or characters: \nhttps://keyforge-compendium.com/decks/DECKCODE \nType in that link here:  ")
     
     #fixed working deck link, for testing purposes
-    deck_link = "https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d"
+    #deck_link = "https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d"
     
     try:
         
         #from here, save all output to text file
         #note the use of codecs to allow for the use of Unicode utf-8 encoding
-        #sys.stdout = codecs.open(r"./deck_info_output.txt", "w", encoding="utf-8")     
+        sys.stdout = codecs.open(r"./deck_info_output.txt", "w", encoding="utf-8")     
      
-        print "Running keyforge_scraper using the link:\n", deck_link
+        print "Running keyforge_scraper using the link: \r\n", deck_link
         
         #unique_ID from that link
         uniq_ID = deck_link[38:]
@@ -223,16 +265,22 @@ def main():
         #make it parsable
         html = BeautifulSoup(raw_html, 'html.parser')
         
-        #and get all of the relevant information from it
+        #and get all of the relevant ABCE and card information from it
         stats = get_stats(html)
         output = get_cards(html)
         link = get_link(html)
         name = get_name(html)
         
-        deck_link_DoKF = "https://decksofkeyforge.com/decks/" + uniq_ID
+        #use that unique_ID to access decksofkeyforge
+        deck_link_DoKF = "https://decksofkeyforge.com/api/decks/" + uniq_ID + "/simple"
+    
+        #now, get the relevant SAS information
+        SAS = get_SAS(deck_link_DoKF)
+        
         
         #print it all out 
-        print "\n\rDeck name:", name
+        print "\r"
+        print "\r\nDeck name:", name
         print "\r"
         print "\r"
         print stats
@@ -241,11 +289,12 @@ def main():
         print output
         print "\r"
         print "\r"
+        print "SAS Info\r\n\r\n", SAS
+        print "\r"
+        print "\r"
         print "KeyForgeGame:", link
         print "\r"
-        print "\r"
         print "KeyForge-Compendium:", deck_link
-        print "\r"
         print "\r"
         print "Decks of KeyForge:", deck_link_DoKF
         print "\r"
