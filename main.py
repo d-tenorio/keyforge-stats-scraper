@@ -166,7 +166,7 @@ def get_cards(s):
             counter_rarity += 1
     
     #now, insert the houses
-    house_indices = [0,13,25]
+    house_indices = [0,13,26]
     for i,house in enumerate(houses):
         cards_with_rarities.insert(house_indices[i],"\r\n" + house)
         
@@ -201,10 +201,10 @@ def main():
     old_stdout = sys.stdout
     
     #obtain link from the user
-    deck_link = raw_input("Enter the link to a keyforge compendium page, of the format of the following link, without any extra spaces or characters: \nhttps://keyforge-compendium.com/decks/DECKCODE \nType in that link here:  ")
+    #deck_link = raw_input("Enter the link to a keyforge compendium page, of the format of the following link, without any extra spaces or characters: \nhttps://keyforge-compendium.com/decks/DECKCODE \nType in that link here:  ")
     
     #fixed working deck link, for testing purposes
-    #deck_link = "https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d"
+    deck_link = "https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d"
     
     try:
         
