@@ -296,7 +296,7 @@ def main():
         print "\r"
         print "KeyForge-Compendium:", deck_link
         print "\r"
-        print "Decks of KeyForge:", deck_link_DoKF
+        print "Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID
         print "\r"
         print "\r"
         print "All done!"

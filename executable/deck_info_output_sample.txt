@@ -1,4 +1,4 @@
-Running keyforge_scraper using the link: 
+﻿Running keyforge_scraper using the link: 
 https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
 
 
@@ -70,8 +70,7 @@ KeyForgeGame: https://www.keyforgegame.com/deck-details/01946cb1-82cd-40b5-a9a1-
 
 KeyForge-Compendium: https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
 
-Decks of KeyForge: https://decksofkeyforge.com/api/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d/simple
-
+Decks of KeyForge: https://decksofkeyforge.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
 
 All done!
 
