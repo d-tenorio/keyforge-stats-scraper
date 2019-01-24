@@ -8,5 +8,9 @@ v 0.11: added decksofkeyforge link to output
 
 1.23.19
 
-v0.20: fixed off-by-1 indexing error
+v 0.20: fixed off-by-1 indexing error
 added SAS support!
+
+1.24.19
+
+v 0.25: added support for multiple decks, changed input format to rely on separate .txt file 

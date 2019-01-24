@@ -1,5 +1,9 @@
-﻿Running keyforge_scraper using the link: 
+Beginning deck analysis...
+Deck number 1 of this run
+
+Running keyforge_scraper using the link: 
 https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
+
 
 
 Deck name: The Beefy Undertaker
@@ -7,7 +11,7 @@ Deck name: The Beefy Undertaker
 
 Creatures: 21 Actions: 8 Artifacts: 5 Upgrades: 2
 A: 14.67 (-2.88)| B: 16.67 (-1.61)| C: 5.67 (+0.16)
-E: 6.33 (-1.25)| Cons: -0.39
+E: 6.33 (-1.25)| Cons: -0.39| Cons: competitive
 
 
 
@@ -72,5 +76,96 @@ KeyForge-Compendium: https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9
 
 Decks of KeyForge: https://decksofkeyforge.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
 
-All done!
 
+----------------------------------------------
+
+Deck number 2 of this run
+
+Running keyforge_scraper using the link: 
+https://keyforge-compendium.com/decks/573aa1d5-d68b-42e4-bc71-c0fc1686da43
+
+
+
+Deck name: Nightmare Pigial, the Heckling Emperor
+
+
+Creatures: 17 Actions: 13 Artifacts: 3 Upgrades: 3
+A: 18.33 (+0.78)| B: 17.67 (-0.61)| C: 3.0 (-2.51)
+E: 8.67 (+1.09)| Cons: -0.13| Cons: competitive
+
+
+
+Mars
+U: Sample Collection
+C: Soft Landing
+C: Squawker
+U: Orbital Bombardment
+U: EMP Blast
+C: Mothergun
+C: “John Smyth”
+C: Zyzzix the Many
+C: Tunk
+C: Ulyq Megamouth
+C: Yxilx Dominator
+C: Biomatrix Backup
+
+Logos
+C: Twin Bolt Emission
+C: Wild Wormhole
+U: Neuro Syphon
+C: Labwork
+C: Library Access
+U: Interdimensional Graft
+C: Mother
+C: Dextre
+C: Titan Mechanic
+R: Skippy Timehog
+C: Batdrone
+C: Ganymede Archivist
+
+Dis
+U: Pandemonium
+U: Three Fates
+U: Library of the Damned
+C: Dominator Bauble
+C: The Terror
+C: Charette
+C: Charette
+C: Ember Imp
+C: Tocsin
+R: Pitlord
+U: Flame-Wreathed
+U: Flame-Wreathed
+
+
+SAS Info
+
+Amber Control: 4.5
+Expected Amber: 18.5
+Artifact Control: 1.5
+Creature Control: 7.0
+Cards: 68
+Synergy: 12
+Antisynergy: -2
+SAS: 78
+
+
+KeyForgeGame: https://www.keyforgegame.com/deck-details/573aa1d5-d68b-42e4-bc71-c0fc1686da43
+
+KeyForge-Compendium: https://keyforge-compendium.com/decks/573aa1d5-d68b-42e4-bc71-c0fc1686da43
+
+Decks of KeyForge: https://decksofkeyforge.com/decks/573aa1d5-d68b-42e4-bc71-c0fc1686da43
+
+
+----------------------------------------------
+
+Deck number 3 of this run
+
+Running keyforge_scraper using the link: 
+b
+
+Error during requests to b : Invalid URL 'b': No schema supplied. Perhaps you meant http://b?
+
+
+Error while analyzing. 
+Please make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces.
