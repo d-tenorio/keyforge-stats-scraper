@@ -11,7 +11,7 @@ Deck name: The Beefy Undertaker
 
 Creatures: 21 Actions: 8 Artifacts: 5 Upgrades: 2
 A: 14.67 (-2.88)| B: 16.67 (-1.61)| C: 5.67 (+0.16)
-E: 6.33 (-1.25)| Cons: -0.39| Cons: competitive
+E: 6.33 (-1.25)| Cons: -0.39
 
 
 
@@ -91,7 +91,7 @@ Deck name: Nightmare Pigial, the Heckling Emperor
 
 Creatures: 17 Actions: 13 Artifacts: 3 Upgrades: 3
 A: 18.33 (+0.78)| B: 17.67 (-0.61)| C: 3.0 (-2.51)
-E: 8.67 (+1.09)| Cons: -0.13| Cons: competitive
+E: 8.67 (+1.09)| Cons: -0.13
 
 
 
@@ -162,10 +162,81 @@ Decks of KeyForge: https://decksofkeyforge.com/decks/573aa1d5-d68b-42e4-bc71-c0f
 Deck number 3 of this run
 
 Running keyforge_scraper using the link: 
-b
-
-Error during requests to b : Invalid URL 'b': No schema supplied. Perhaps you meant http://b?
+https://keyforge-compendium.com/decks/3b22e33f-23be-4078-b503-38f2d6475b64
 
 
-Error while analyzing. 
-Please make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces.
+Deck name: Tsong, the Watcher of Food
+
+
+Creatures: 15 Actions: 18 Artifacts: 2 Upgrades: 1
+A: 22.33 (+4.78)| B: 16.33 (-1.95)| C: 7.33 (+1.82)
+E: 11.67 (+4.09)| Cons: 0.723
+
+
+
+Shadows
+U: Too Much to Protect
+R: Imperial Traitor
+C: Nerve Blast
+C: Nerve Blast
+C: Nerve Blast
+C: Poison Wave
+C: Bait and Switch
+U: Special Delivery
+C: Shadow Self
+C: Shadow Self
+C: Nexus
+C: Nexus
+
+Untamed
+R: Scout
+U: Nature's Call
+C: Regrowth
+C: Nocturnal Maneuver
+C: Full Moon
+C: Full Moon
+C: Key Charge
+U: Lifeweb
+C: Niffle Ape
+C: Murmook
+C: Dust Pixie
+C: Dust Pixie
+
+Sanctum
+C: Terms of Redress
+C: Inspiration
+C: Inspiration
+U: Gorm of Omm
+C: Staunch Knight
+C: Sergeant Zakiel
+C: Sergeant Zakiel
+C: Bulwark
+C: Sequis
+C: Sequis
+C: Raiding Knight
+R: Mantle of the Zealot
+
+
+SAS Info
+
+Amber Control: 10.0
+Expected Amber: 28.5
+Artifact Control: 4.0
+Creature Control: 9.0
+Cards: 80
+Synergy: 5
+Antisynergy: -3
+SAS: 82
+
+
+KeyForgeGame: https://www.keyforgegame.com/deck-details/3b22e33f-23be-4078-b503-38f2d6475b64
+
+KeyForge-Compendium: https://keyforge-compendium.com/decks/3b22e33f-23be-4078-b503-38f2d6475b64
+
+Decks of KeyForge: https://decksofkeyforge.com/decks/3b22e33f-23be-4078-b503-38f2d6475b64
+
+
+----------------------------------------------
+
+All done! Analyzed 3 decks in total.
+

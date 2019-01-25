@@ -77,8 +77,8 @@ def get_stats(s):
         elif i >= 4 and i < 7:
             second_line.append(curr_line)
         
-        else:
-            third_line.append(curr_line)
+        elif i >= 7 and i < 9:
+                third_line.append(curr_line)
       
     #temporary list to hold each line
     temp = []
@@ -225,91 +225,112 @@ def get_SAS(s):
     ans = "\r\n".join(ans)
     return ans
     
+def analyze_deck(deck_link):
+    """
+    takes in a string containing a keyforge-compendium link and 
+    outputs desirable statistics
+    of that deck link in a nicely formatted string
+    """
     
+    #unique_ID from that link
+    uniq_ID = deck_link[38:]
+    
+    #now, get the html from the Compendium page
+    raw_html = simple_get(deck_link)
+    
+    #make it parsable
+    html = BeautifulSoup(raw_html, 'html.parser')
+    
+    #and get all of the relevant ABCE and card information from it
+    stats = get_stats(html)
+    output = get_cards(html)
+    link = get_link(html)
+    name = get_name(html)
+    
+    #use that unique_ID to access decksofkeyforge
+    deck_link_DoKF = "https://decksofkeyforge.com/api/decks/" + uniq_ID + "/simple"
+
+    #now, get the relevant SAS information
+    SAS = get_SAS(deck_link_DoKF)
+    
+    #print it all out 
+    print "\r"
+    print "\r\nDeck name:", name
+    print "\r"
+    print "\r"
+    print stats
+    print "\r"
+    print "\r"
+    print output
+    print "\r"
+    print "\r"
+    print "SAS Info\r\n\r\n", SAS
+    print "\r"
+    print "\r"
+    print "KeyForgeGame:", link
+    print "\r"
+    print "KeyForge-Compendium:", deck_link
+    print "\r"
+    print "Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID
+    print "\r"
+    print "\r"
 
 
 def main():
     """
-    This script prompts the user for input in the form of a keyforge compendium link
-    Then, it parses the html from that link and obtains important deck information (metrics + cards)
+    This script searches for a properly named .txt file that contains
+    a list of keyforge-compendium links, one per line
+    
+    For each link, main.py parses the html from that link and obtains important deck information (metrics + cards)
     
     It then outputs all of that information to a .txt file saved in the same directory as this file,
     deck_info_output.txt. deck_info_output.txt will also hold any error information that might occur.
     
     """
     
-    
     #save the location of stdout
     old_stdout = sys.stdout
     
-    #obtain link from the user
-    deck_link = raw_input("Enter the link to a keyforge compendium page, of the format of the following link, without any extra spaces or characters: \nhttps://keyforge-compendium.com/decks/DECKCODE \nType in that link here:  ")
+    #find the file
     
-    #fixed working deck link, for testing purposes
-    #deck_link = "https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d"
+    #from here, save all output to text file
+    #note the use of codecs to allow for the use of Unicode utf-8 encoding
+    sys.stdout = codecs.open(r"./deck_info_output.txt", "w", encoding="utf-8")   
     
+    try: 
+        text_file = open("kf_deck_links.txt", "r")
+        lines = text_file.readlines()
+        text_file.close()
+    except:
+        print "\r\nERROR when attempting to read in kf_deck_links.txt, please make sure the file is in the same directory as the executable and follows the desired format"
+    
+
     try:
+        print "Beginning deck analysis...\r"
+        for i,deck_link in enumerate(lines):
+          
+            print "Deck number", i+1, "of this run"
+            print "\r\nRunning keyforge_scraper using the link: \r\n", deck_link
+            
+            #remove any newline characters that may have slipped in
+            clean_link = deck_link.strip("\n")
+            clean_link = clean_link.strip("\r")
+            analyze_deck(clean_link)
         
-        #from here, save all output to text file
-        #note the use of codecs to allow for the use of Unicode utf-8 encoding
-        sys.stdout = codecs.open(r"./deck_info_output.txt", "w", encoding="utf-8")     
-     
-        print "Running keyforge_scraper using the link: \r\n", deck_link
-        
-        #unique_ID from that link
-        uniq_ID = deck_link[38:]
-        
-        #now, get the html from the Compendium page
-        raw_html = simple_get(deck_link)
-        
-        #make it parsable
-        html = BeautifulSoup(raw_html, 'html.parser')
-        
-        #and get all of the relevant ABCE and card information from it
-        stats = get_stats(html)
-        output = get_cards(html)
-        link = get_link(html)
-        name = get_name(html)
-        
-        #use that unique_ID to access decksofkeyforge
-        deck_link_DoKF = "https://decksofkeyforge.com/api/decks/" + uniq_ID + "/simple"
-    
-        #now, get the relevant SAS information
-        SAS = get_SAS(deck_link_DoKF)
-        
-        
-        #print it all out 
-        print "\r"
-        print "\r\nDeck name:", name
-        print "\r"
-        print "\r"
-        print stats
-        print "\r"
-        print "\r"
-        print output
-        print "\r"
-        print "\r"
-        print "SAS Info\r\n\r\n", SAS
-        print "\r"
-        print "\r"
-        print "KeyForgeGame:", link
-        print "\r"
-        print "KeyForge-Compendium:", deck_link
-        print "\r"
-        print "Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID
-        print "\r"
-        print "\r"
-        print "All done!"
-        print "\r"
-    
-        #reset stdout
-        sys.stdout = old_stdout
-        
+            print ("----------------------------------------------\r\n")
+            
     except:
         #in case there was an error, print a debugging message and reset the std out
-        print("\r\nLooks like there was an error while running the program. \r\nPlease make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces.")
+        print "\r\n\r\nERROR while analyzing. \r\nPlease make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces." 
         sys.stdout = old_stdout
+        return
     
+    print "All done! Analyzed", i+1, "decks in total."
+    print "\r"
+    #reset stdout
+    sys.stdout = old_stdout
+        
+        
 if __name__== "__main__":
     main()
 

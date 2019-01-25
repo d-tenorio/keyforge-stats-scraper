@@ -14,3 +14,7 @@ added SAS support!
 1.24.19
 
 v 0.25: added support for multiple decks, changed input format to rely on separate .txt file 
+
+1.25.19
+
+v 0.26: fixed a bug where KSS was taking extra info after an update to keyforge-compendium
