@@ -2,7 +2,7 @@
 """
 @author: David Tenorio
 
-v0.11
+v0.30
 
 Written in Python 2.7.X, mainly to maintain compatibility with PyInstaller
 
@@ -14,10 +14,11 @@ from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
-import sys
-import codecs
+import codecs, sys
 import json
 import urllib2
+import unicodecsv as csv
+import re
 
 # parts of this code taken from https://realpython.com/python-web-scraping-practical-introduction/
 # and adapted for this use
@@ -59,7 +60,13 @@ def log_error(e):
     print(e)
 
 #end of code taken from https://realpython.com/python-web-scraping-practical-introduction/
-    
+ 
+def get_name(s):
+    """
+    returns the name of the deck
+    """
+    return [s.select("div > h5 > a")[0].text]
+
 def get_stats(s):
     """
     gets the stats for a keyforge deck: ABCE + different types of cards
@@ -83,7 +90,7 @@ def get_stats(s):
     #temporary list to hold each line
     temp = []
     
-    #now, go through each line and format it properly
+    #go through each line and format it properly
     
     #first line: breakdown of Creatures/Actions/Artifacts/Upgrades
     for e in first_line:
@@ -118,7 +125,41 @@ def get_stats(s):
     line_3 = "| ".join(temp)
     
     #now, return the three lines separated into new lines
-    return "\r\n".join([line_1,line_2,line_3])
+    return [line_1,line_2,line_3]
+
+def camel_case(s):
+    parts = s.split(" ")
+    parts[0] = parts[0].lower()
+    
+    return "".join(parts)
+
+def get_SAS(s):
+    """
+    takes in a decksofkeyforge link, loads the JSON containing deck information,
+    and returns the important SAS stats
+    """
+
+    #now, get the json from decksofkeyforge
+    data = json.load(urllib2.urlopen(s))
+    
+    titles_AERC = ["Amber Control", "Expected Amber","Artifact Control","Creature Control"]
+    titles_SAS = ["Cards","Synergy","Antisynergy","SAS"]    
+    
+    ans = ["SAS Info"]
+    
+    #find the proper key-value pair in the JSON
+    for e in titles_AERC:
+        val = str(data[camel_case(e)])
+        ans.append(": ".join([e,val]) )
+        
+    for e in titles_SAS:
+        val = data[e.lower()+"Rating"]
+        if e == "Antisynergy": #make sure the antisynergy is negative!
+            val = -1*val
+        val = str(val)
+        ans.append(": ".join([e,val]) )
+
+    return ans
         
 def get_cards(s):
     """
@@ -173,9 +214,9 @@ def get_cards(s):
     #now, insert the houses
     house_indices = [0,13,26]
     for i,house in enumerate(houses):
-        cards_with_rarities.insert(house_indices[i],"\r\n" + house)
-        
-    return "\r\n".join(cards_with_rarities)
+        cards_with_rarities.insert(house_indices[i], house)
+
+    return cards_with_rarities
 
 
 def get_link(s):
@@ -184,97 +225,70 @@ def get_link(s):
     """
     return s.select("div > h5 > a")[0]['href']
    
-def get_name(s):
-    """
-    returns the name of the deck
-    """
-    return s.select("div > h5 > a")[0].text
 
-def camel_case(s):
-    parts = s.split(" ")
-    parts[0] = parts[0].lower()
     
-    return "".join(parts)
-
-def get_SAS(s):
-    """
-    takes in a decksofkeyforge link, loads the JSON containing deck information,
-    and returns the important SAS stats
-    """
-
-    #now, get the json from decksofkeyforge
-    data = json.load(urllib2.urlopen(s))
-    
-    titles_AERC = ["Amber Control", "Expected Amber","Artifact Control","Creature Control"]
-    titles_SAS = ["Cards","Synergy","Antisynergy","SAS"]    
-    
-    ans = []
-    
-    #find the proper key-value pair in the JSON
-    for e in titles_AERC:
-        val = str(data[camel_case(e)])
-        ans.append(": ".join([e,val]) )
-        
-    for e in titles_SAS:
-        val = data[e.lower()+"Rating"]
-        if e == "Antisynergy": #make sure the antisynergy is negative!
-            val = -1*val
-        val = str(val)
-        ans.append(": ".join([e,val]) )
-        
-    ans = "\r\n".join(ans)
-    return ans
-    
-def analyze_deck(deck_link):
+def analyze_decks(deck_links,fname):
     """
     takes in a string containing a keyforge-compendium link and 
-    outputs desirable statistics
-    of that deck link in a nicely formatted string
+    writes desirable statistics of that deck link to a .csv file
     """
     
-    #unique_ID from that link
-    uniq_ID = deck_link[38:]
-    
-    #now, get the html from the Compendium page
-    raw_html = simple_get(deck_link)
-    
-    #make it parsable
-    html = BeautifulSoup(raw_html, 'html.parser')
-    
-    #and get all of the relevant ABCE and card information from it
-    stats = get_stats(html)
-    output = get_cards(html)
-    link = get_link(html)
-    name = get_name(html)
-    
-    #use that unique_ID to access decksofkeyforge
-    deck_link_DoKF = "https://decksofkeyforge.com/api/decks/" + uniq_ID + "/simple"
-
-    #now, get the relevant SAS information
-    SAS = get_SAS(deck_link_DoKF)
-    
-    #print it all out 
-    print "\r"
-    print "\r\nDeck name:", name
-    print "\r"
-    print "\r"
-    print stats
-    print "\r"
-    print "\r"
-    print output
-    print "\r"
-    print "\r"
-    print "SAS Info\r\n\r\n", SAS
-    print "\r"
-    print "\r"
-    print "KeyForgeGame:", link
-    print "\r"
-    print "KeyForge-Compendium:", deck_link
-    print "\r"
-    print "Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID
-    print "\r"
-    print "\r"
-
+    with open(fname, mode='wb') as f:
+        w = csv.writer(f, encoding='utf-8')
+        
+        for j,deck_link in enumerate(deck_links):
+            print "\r"
+            print "\r\nDeck number", j+1, "of this run"
+            print "\r\nRunning keyforge_scraper using the link: \r\n", deck_link
+            
+            w.writerow(["Deck number:",str(j+1)])
+            
+            deck_link = deck_link.strip("\n")
+            deck_link = deck_link.strip("\r")
+            
+            #unique_ID from that link
+            uniq_ID = deck_link[38:]
+        
+            #now, get the html from the Compendium page
+            raw_html = simple_get(deck_link)
+        
+            #make it parsable
+            html = BeautifulSoup(raw_html, 'html.parser')
+        
+            #begin extracting information, starting with the deck name
+            name = get_name(html)
+            w.writerow(name)
+            
+            #continue on to the ABCE stats and different card types
+            stats = get_stats(html)
+            for stat in stats:
+                w.writerow([stat])
+                    
+            #now, use the deck's unique_ID to access decksofkeyforge
+            deck_link_DoKF = "https://decksofkeyforge.com/api/decks/" + uniq_ID + "/simple"
+        
+            #get the relevant SAS information
+            SAS = get_SAS(deck_link_DoKF)
+            w.writerow([" "])
+            for stat in SAS:
+                w.writerow([stat])
+                
+            #write out all of the cards + their rarities + house
+            w.writerow([" "])
+            cards = get_cards(html)
+            for card in cards:
+                #get rid of quotation marks, which come out weird in Unicode
+                card = re.sub(u'\u201c','"',card)
+                card = re.sub(u'\u201d','"',card)
+                w.writerow([card])
+            
+            #finally, print out all relevant links
+            link = get_link(html)
+            w.writerow(["Links"])
+            w.writerow(["KeyForgeGame:", link])
+            w.writerow(["KeyForge-Compendium:", deck_link])
+            w.writerow(["Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID])
+            w.writerow([" "])
 
 def main():
     """
@@ -283,8 +297,8 @@ def main():
     
     For each link, main.py parses the html from that link and obtains important deck information (metrics + cards)
     
-    It then outputs all of that information to a .txt file saved in the same directory as this file,
-    deck_info_output.txt. deck_info_output.txt will also hold any error information that might occur.
+    It then outputs all of that information to a .csv file saved in the same directory as this file,
+    deck_info_output.csv. kss_debug.txt will also hold any error information that might occur.
     
     """
     
@@ -293,40 +307,35 @@ def main():
     
     #find the file
     
-    #from here, save all output to text file
+    #from here, save all printed output to text file
     #note the use of codecs to allow for the use of Unicode utf-8 encoding
-    sys.stdout = codecs.open(r"./deck_info_output.txt", "w", encoding="utf-8")   
+    sys.stdout = codecs.open(r"./kss_debug.txt", "w", encoding="utf-8-sig")   
     
     try: 
         text_file = open("kf_deck_links.txt", "r")
-        lines = text_file.readlines()
+        deck_links = text_file.readlines()
         text_file.close()
     except:
         print "\r\nERROR when attempting to read in kf_deck_links.txt, please make sure the file is in the same directory as the executable and follows the desired format"
     
 
+
+    print "Beginning deck analysis...\r"
+    
+    fname = 'deck_info_output.csv'
     try:
-        print "Beginning deck analysis...\r"
-        for i,deck_link in enumerate(lines):
-          
-            print "Deck number", i+1, "of this run"
-            print "\r\nRunning keyforge_scraper using the link: \r\n", deck_link
-            
-            #remove any newline characters that may have slipped in
-            clean_link = deck_link.strip("\n")
-            clean_link = clean_link.strip("\r")
-            analyze_deck(clean_link)
-        
-            print ("----------------------------------------------\r\n")
-            
+        analyze_decks(deck_links,fname)    
+    
+    
+    #in case there was an error, print a debugging message and reset the std out
     except:
-        #in case there was an error, print a debugging message and reset the std out
         print "\r\n\r\nERROR while analyzing. \r\nPlease make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces." 
         sys.stdout = old_stdout
         return
     
-    print "All done! Analyzed", i+1, "decks in total."
+    print "\r\nAll done! Analyzed", len(deck_links), "decks in total."
     print "\r"
+    
     #reset stdout
     sys.stdout = old_stdout
         
