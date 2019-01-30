@@ -65,7 +65,11 @@ def get_name(s):
     """
     returns the name of the deck
     """
-    return [s.select("div > h5 > a")[0].text]
+    name = s.select("div > h5 > a")[0].text
+    #get rid of Unicode quotation marks, which come out weird in Unicode
+    name = re.sub(u'\u201c','"',name)
+    name = re.sub(u'\u201d','"',name)
+    return [name]
 
 def get_stats(s):
     """
@@ -277,7 +281,7 @@ def analyze_decks(deck_links,fname):
             w.writerow([" "])
             cards = get_cards(html)
             for card in cards:
-                #get rid of quotation marks, which come out weird in Unicode
+                #get rid of Unicode quotation marks, which come out weird when writing out
                 card = re.sub(u'\u201c','"',card)
                 card = re.sub(u'\u201d','"',card)
                 w.writerow([card])
