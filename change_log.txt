@@ -23,3 +23,7 @@ v 0.26: fixed a bug where KSS was taking extra info after an update to keyforge-
 
 v 0.30: changed output file format to .csv rather than .txt
 v 0.31: fixed an error with importing Unicode quotation marks in deck titles
+
+2.13.19
+
+v 0.35: fixed error with DoKF importing, added support for any kind of KF deck link

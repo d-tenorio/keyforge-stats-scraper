@@ -3,22 +3,27 @@
 
 Deck number 1 of this run
 
-Running keyforge_scraper using the link: 
-https://keyforge-compendium.com/decks/01946cb1-82cd-40b5-a9a1-2945b377c26d
-
+Running keyforge_scraper using the deck ID: 
+0d9cac9e-c9c7-4f45-9066-3cea42041325
 
 
 Deck number 2 of this run
 
-Running keyforge_scraper using the link: 
-https://keyforge-compendium.com/decks/573aa1d5-d68b-42e4-bc71-c0fc1686da43
-
+Running keyforge_scraper using the deck ID: 
+fca6f716-b542-44bc-9b95-39811783855c
 
 
 Deck number 3 of this run
 
-Running keyforge_scraper using the link: 
-https://keyforge-compendium.com/decks/3b22e33f-23be-4078-b503-38f2d6475b64
+Running keyforge_scraper using the deck ID: 
+3b22e33f-23be-4078-b503-38f2d6475b64
 
-All done! Analyzed 3 decks in total.
+
+Deck number 4 of this run
+
+Running keyforge_scraper using the deck ID: 
+acb711e8-cd15-4818-b967-7282ad039071
+
+
+All done! Analyzed 4 decks in total.
 
