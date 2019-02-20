@@ -2,7 +2,7 @@
 """
 @author: David Tenorio
 
-v0.30
+v0.36
 
 Written in Python 2.7.X, mainly to maintain compatibility with PyInstaller
 
@@ -63,15 +63,42 @@ def log_error(e):
  
 def get_name(s):
     """
-    returns the name of the deck
+    takes in html from a keyforgegame link, s, and returns the name of the deck
     """
-    name = s.select("div > h5 > a")[0].text
+    name = s.select('head > title')[0].text
     #get rid of Unicode quotation marks, which come out weird in Unicode
     name = re.sub(u'\u201c','"',name)
     name = re.sub(u'\u201d','"',name)
     return [name]
 
-def get_stats(s):
+def get_comp(s):
+    """
+    takes in html from a keyforgegame link, s, and returns the competitive stats
+    for the deck (chains, power level, wins, losses)
+    """
+    #find the competitive stats in the html
+    comp_stats = s.select('span')[1:11]
+    #separate them out into two different lines
+    power_and_chains = []
+    wins_and_losses = []
+    #parse the html, sort the right stat into its respective line
+    for i, e in enumerate(comp_stats):
+        if i % 2 == 0:
+            title = e.text
+            val = str(int(comp_stats[i+1].text))
+            
+            if i < 4:
+                power_and_chains.append(": ".join([title,val]))
+            else:
+                wins_and_losses.append(": ".join([title,val]))
+    #then, format the printed output
+    output = []
+    for x in [power_and_chains,wins_and_losses]:
+        output.append(" | ".join(x))
+    return output
+
+
+def get_abce(s):
     """
     gets the stats for a keyforge deck: ABCE + different types of cards
     """
@@ -82,7 +109,10 @@ def get_stats(s):
     for i, e in enumerate(s.select('li')):
         curr_line = e.text.split(" ")
 
-        if i < 4:    
+        if i < 4:
+            #different formatting needed for these values
+            curr_line = e.text.split("\n")
+            curr_line = [str(int(curr_line[1])), curr_line[2].strip(' ')]
             first_line.append(curr_line)
             
         elif i >= 4 and i < 7:
@@ -95,7 +125,6 @@ def get_stats(s):
     temp = []
     
     #go through each line and format it properly
-    
     #first line: breakdown of Creatures/Actions/Artifacts/Upgrades
     for e in first_line:
         e.reverse()
@@ -115,7 +144,7 @@ def get_stats(s):
             this_line = [ABCE_dict[i],e[1],e[2]]
         temp.append(" ".join(this_line))
     
-    line_2 = "| ".join(temp)
+    line_2 = " | ".join(temp)
     
     #third line: E and the consistency
     temp = []
@@ -126,7 +155,7 @@ def get_stats(s):
             this_line = ["Cons:",e[1]]
         temp.append(" ".join(this_line))
             
-    line_3 = "| ".join(temp)
+    line_3 = " | ".join(temp)
     
     #now, return the three lines separated into new lines
     return [line_1,line_2,line_3]
@@ -149,21 +178,21 @@ def get_SAS(s):
     titles_AERC = ["Amber Control", "Expected Amber","Artifact Control","Creature Control"]
     titles_SAS = ["Cards","Synergy","Antisynergy","SAS"]    
     
-    ans = ["SAS Info"]
+    output = ["SAS Info"]
     
     #find the proper key-value pair in the JSON
     for e in titles_AERC:
         val = str(int(round(data['deck'][camel_case(e)])))
-        ans.append(": ".join([e,val]) )
+        output.append(": ".join([e,val]) )
         
     for e in titles_SAS:
         val = data['deck'][e.lower()+"Rating"]
         if e == "Antisynergy": #make sure the antisynergy is negative!
             val = -1*val
         val = str(int(round(val)))
-        ans.append(": ".join([e,val]) )
+        output.append(": ".join([e,val]) )
 
-    return ans
+    return output
         
 def get_cards(s):
     """
@@ -223,13 +252,6 @@ def get_cards(s):
     return cards_with_rarities
 
 
-def get_link(s):
-    """
-    returns the original KeyForgeGame link
-    """
-    return s.select("div > h5 > a")[0]['href']
-   
-
     
 def analyze_decks(deck_links,fname):
     """
@@ -254,40 +276,48 @@ def analyze_decks(deck_links,fname):
             
             uniq_ID = deck_link[ID_begin+1:]
             
-            deck_link = r'https://keyforge-compendium.com/decks/' + uniq_ID
+            compendium_link = r'https://keyforge-compendium.com/decks/' + uniq_ID
             
             print "\r\nRunning keyforge_scraper using the deck ID: \r\n", uniq_ID
             
             w.writerow(["Deck number:",str(j+1)])
             
-        
-            #now, get the html from the Compendium page
-            raw_html = simple_get(deck_link)
-        
-            #make it parsable
-            html = BeautifulSoup(raw_html, 'html.parser')
-        
-            #begin extracting information, starting with the deck name
-            name = get_name(html)
+            #start by getting the name and competitive info from the FFG site, keyforgegame
+            kfg_link = r"https://www.keyforgegame.com/deck-details/" + uniq_ID 
+            raw_html = simple_get(kfg_link)
+            kfg_html = BeautifulSoup(raw_html, 'html.parser')
+            
+            name = get_name(kfg_html)
             w.writerow(name)
             
+            compete_stats = get_comp(kfg_html)
+            for stat in compete_stats:
+                w.writerow([stat])
+            w.writerow([" "])
+        
+            #now, get the html from the Compendium page
+            raw_html = simple_get(compendium_link)
+        
+            #make it parsable
+            compendium_html = BeautifulSoup(raw_html, 'html.parser')
+        
             #continue on to the ABCE stats and different card types
-            stats = get_stats(html)
-            for stat in stats:
+            abce_stats = get_abce(compendium_html)
+            for stat in abce_stats:
                 w.writerow([stat])
                     
             #now, use the deck's unique_ID to access decksofkeyforge
-            deck_link_DoKF = "https://decksofkeyforge.com/api/decks/" + uniq_ID
+            dokf_link = "https://decksofkeyforge.com/api/decks/" + uniq_ID
 
             #get the relevant SAS information
-            SAS = get_SAS(deck_link_DoKF)
+            SAS = get_SAS(dokf_link)
             w.writerow([" "])
             for stat in SAS:
                 w.writerow([stat])
                 
             #write out all of the cards + their rarities + house
             w.writerow([" "])
-            cards = get_cards(html)
+            cards = get_cards(compendium_html)
             for card in cards:
                 #get rid of Unicode quotation marks, which come out weird when writing out
                 card = re.sub(u'\u201c','"',card)
@@ -295,9 +325,8 @@ def analyze_decks(deck_links,fname):
                 w.writerow([card])
             
             #finally, print out all relevant links
-            link = get_link(html)
             w.writerow(["Links"])
-            w.writerow(["KeyForgeGame:", link])
+            w.writerow(["KeyForgeGame:", kfg_link])
             w.writerow(["KeyForge-Compendium:", deck_link])
             w.writerow(["Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID])
             w.writerow([" "])
@@ -325,6 +354,7 @@ def main():
         text_file = open("kf_deck_links.txt", "r")
         deck_links = text_file.readlines()
         text_file.close()
+
     except:
         print "\r\nERROR when attempting to read in kf_deck_links.txt, please make sure the file is in the same directory as the executable and follows the desired format"
         sys.stdout = old_stdout
@@ -337,12 +367,11 @@ def main():
     try:
         analyze_decks(deck_links,fname)    
     
-    #in case there was an error, print a debugging message and reset the std out
+    #in case there was an error, print a debugging message and reset stdout
     except:
         print "\r\n\r\nERROR while analyzing. \r\nPlease make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces." 
         sys.stdout = old_stdout
         return 
-    
     
     print "\r\n\r\nAll done! Analyzed", len(deck_links), "decks in total."
     print "\r"

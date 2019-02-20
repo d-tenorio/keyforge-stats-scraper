@@ -27,3 +27,7 @@ v 0.31: fixed an error with importing Unicode quotation marks in deck titles
 2.13.19
 
 v 0.35: fixed error with DoKF importing, added support for any kind of KF deck link
+
+2.20.19
+
+v 0.36: updated compatibility with Compendium, added competitive info (chains, W/L) to output
