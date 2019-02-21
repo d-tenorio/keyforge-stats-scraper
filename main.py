@@ -2,7 +2,7 @@
 """
 @author: David Tenorio
 
-v0.36
+v0.40
 
 Written in Python 2.7.X, mainly to maintain compatibility with PyInstaller
 
@@ -60,41 +60,40 @@ def log_error(e):
     print(e)
 
 #end of code taken from https://realpython.com/python-web-scraping-practical-introduction/
- 
-def get_name(s):
+
+def weird_character_removal(s):
+    """takes in a string, s, and replaces any weird Unicode characters with the proper output"""
+    s = re.sub(u'\u201c','"',s)
+    s = re.sub(u'\u201d','"',s)
+    s = re.sub(u'\u2019','\'',s)
+    return s
+
+def get_name(J):
     """
-    takes in html from a keyforgegame link, s, and returns the name of the deck
+    takes in a json from a keyforgegame API call, J, and returns the name of the deck
     """
-    name = s.select('head > title')[0].text
+    name = J['data']['name']
     #get rid of Unicode quotation marks, which come out weird in Unicode
-    name = re.sub(u'\u201c','"',name)
-    name = re.sub(u'\u201d','"',name)
+    name = weird_character_removal(name)
     return [name]
 
-def get_comp(s):
+def get_comp(J):
     """
-    takes in html from a keyforgegame link, s, and returns the competitive stats
+    takes in a json from a keyforgegame API call, J, and returns the competitive stats
     for the deck (chains, power level, wins, losses)
     """
     #find the competitive stats in the html
-    comp_stats = s.select('span')[1:11]
-    #separate them out into two different lines
-    power_and_chains = []
-    wins_and_losses = []
-    #parse the html, sort the right stat into its respective line
-    for i, e in enumerate(comp_stats):
-        if i % 2 == 0:
-            title = e.text
-            val = str(int(comp_stats[i+1].text))
-            
-            if i < 4:
-                power_and_chains.append(": ".join([title,val]))
-            else:
-                wins_and_losses.append(": ".join([title,val]))
-    #then, format the printed output
+    data = J['data']
+    
+    titles = ['Power Level','Chains','Wins','Losses']
+    
     output = []
-    for x in [power_and_chains,wins_and_losses]:
-        output.append(" | ".join(x))
+    for title in titles:
+        api_key = "_".join(title.lower().split(" "))
+        api_val = str(int(data[api_key]))
+        
+        output.append(": ".join([title,api_val]))
+
     return output
 
 
@@ -194,62 +193,73 @@ def get_SAS(s):
 
     return output
         
-def get_cards(s):
+def get_cards(J):
     """
+    takes in a json from a keyforgegame API call, J,
     gets the specific cards in the decks along with the houses and returns 
     a nicely formatted string for printing containing the contents of the deck
     """
-
-    cards = []
+    #locate the section of the JSON we are interested in
+    data = J['data']['_links']
     
-    #amounts and names of each card
-    for i, e in enumerate(s.select('td')):
-        if (i-1) % 6 == 0 or (i-1) % 6 == 1:
-            cards.append(e.text)
-            
-    #rarity + houses
-    rarities = []
-    poss_houses = ["Brobnar","Dis","Logos","Mars","Sanctum","Shadows","Untamed"]
-    houses_uniq = set()
-    houses = []
-   
-    mav_count = 0 
+    #dictionary to hold each card, with the house as the key and a list
+    #of cards as the val
+    cards = {}
     
-    #separate the cards from the houses
-    for i, e in enumerate(s.select('td > img')):
-        if e.attrs['alt'] in poss_houses:
-            
-            last_house_index = i            
-            
-            if e.attrs['alt'] not in houses_uniq:
-                houses_uniq.add(e.attrs['alt'])
-                houses.append(e.attrs['alt'])    
+    #initialize the house
+    for i in range(3):
+        house = data['houses'][i]
+        cards[house] = []
     
+    #dictionary to hold how many times each card appears
+    card_ids = {}
+    for i in range(36):
+        card_id = data['cards'][i]
+        if card_id in card_ids:
+            card_ids[card_id] += 1
         else:
-            if i - last_house_index == 1:            
-                rarities.append(e.attrs['alt'])
-            else:
-                rarities[-1] = "MAV"
-                mav_count += 1
-            
-    
-    cards_with_rarities = []
-    
-    counter_rarity = 0
-    
-    #getting the right amount of copies of each card
-    for i,e in enumerate(cards):
-        if i % 2 == 1:
-            for j in range(int(cards[i-1])):
-                cards_with_rarities.append(": ".join([rarities[counter_rarity][0],e]))
-            counter_rarity += 1
-    
-    #now, insert the houses
-    house_indices = [0,13,26]
-    for i,house in enumerate(houses):
-        cards_with_rarities.insert(house_indices[i], house)
+            card_ids[card_id] = 1
 
-    return cards_with_rarities
+    
+    card_data = J['_linked']['cards']
+    
+    for i in range(36):
+        #keep going until we run out of cards
+        try:
+            curr = card_data[i]
+            
+            #get interesting stats
+            name = curr['card_title']
+            #get rid of strange Unicode characters, which come out weird in Unicode
+            name = weird_character_removal(name)
+            
+            curr_house = curr['house']
+            rarity = curr['rarity'][0]
+            if curr['is_maverick']:
+                rarity = 'M'
+            exp = curr['expansion']
+            curr_id = curr['id']
+            
+            #then add the right number of copies of this card
+            #to our list of cards
+            num_copies = card_ids[curr_id]
+            line = ": ".join([rarity,name])
+            for _ in range(num_copies):
+                cards[curr_house].append(line)
+            
+        #if we run out of cards, stop
+        except:
+            break
+        
+    output = []
+    
+    for house in sorted(cards.keys()):
+        output.append(house)
+        for card in cards[house]:
+            output.append(card)
+    
+    return output
+    
 
 
     
@@ -282,19 +292,27 @@ def analyze_decks(deck_links,fname):
             
             w.writerow(["Deck number:",str(j+1)])
             
-            #start by getting the name and competitive info from the FFG site, keyforgegame
-            kfg_link = r"https://www.keyforgegame.com/deck-details/" + uniq_ID 
-            raw_html = simple_get(kfg_link)
-            kfg_html = BeautifulSoup(raw_html, 'html.parser')
+            #use the KeyforgeGame API to get a lot of ifo
+            kfg_api = r"https://www.keyforgegame.com/api/decks/" + uniq_ID + r"/?links=cards,notes"
             
-            name = get_name(kfg_html)
+            #need to simulate a browser for the kfg API to work
+            headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/65.0'}
+            params = { 'links': 'cards'}
+            
+            kfg_api_html = get(kfg_api, headers=headers, params=params)
+            kfg_data = kfg_api_html.json()
+            
+            #start by getting the name and competitive info
+            name = get_name(kfg_data)
             w.writerow(name)
+            w.writerow([" "])
             
-            compete_stats = get_comp(kfg_html)
+            w.writerow(["Competitive Stats"])
+            compete_stats = get_comp(kfg_data)
             for stat in compete_stats:
                 w.writerow([stat])
             w.writerow([" "])
-        
+            
             #now, get the html from the Compendium page
             raw_html = simple_get(compendium_link)
         
@@ -317,18 +335,17 @@ def analyze_decks(deck_links,fname):
                 
             #write out all of the cards + their rarities + house
             w.writerow([" "])
-            cards = get_cards(compendium_html)
+            
+            cards = get_cards(kfg_data)
             for card in cards:
-                #get rid of Unicode quotation marks, which come out weird when writing out
-                card = re.sub(u'\u201c','"',card)
-                card = re.sub(u'\u201d','"',card)
                 w.writerow([card])
             
             #finally, print out all relevant links
+            w.writerow([" "])
             w.writerow(["Links"])
-            w.writerow(["KeyForgeGame:", kfg_link])
+            w.writerow(["KeyForgeGame:", r"https://www.keyforgegame.com/deck-details/" + uniq_ID])
             w.writerow(["KeyForge-Compendium:", deck_link])
-            w.writerow(["Decks of KeyForge:", "https://decksofkeyforge.com/decks/" + uniq_ID])
+            w.writerow(["Decks of KeyForge:", r"https://decksofkeyforge.com/decks/" + uniq_ID])
             w.writerow([" "])
 
 def main():
@@ -372,7 +389,7 @@ def main():
         print "\r\n\r\nERROR while analyzing. \r\nPlease make sure the link entered was an unmodified keyforge-compendium https:// link with no extra characters or spaces." 
         sys.stdout = old_stdout
         return 
-    
+
     print "\r\n\r\nAll done! Analyzed", len(deck_links), "decks in total."
     print "\r"
     

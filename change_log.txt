@@ -31,3 +31,7 @@ v 0.35: fixed error with DoKF importing, added support for any kind of KF deck l
 2.20.19
 
 v 0.36: updated compatibility with Compendium, added competitive info (chains, W/L) to output
+
+2.21.19
+
+v 0.40: revamped code to use official Keyforge API to obtain cards
